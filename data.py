@@ -1,45 +1,160 @@
 # -*- coding: utf-8 -*-
+import openpyxl
+from random import choice, randint
+from PIL import Image, ImageDraw, ImageFont
 import sqlite3
-from os.path import dirname, realpath
+import os
+import time
+
+def is_access(user, key):
+    wb = openpyxl.load_workbook(filename = 'resources/users.xlsx')
+    sheet = wb['1']
+    users_number = sheet['A1'].value
+    for i in range(users_number):
+        u = sheet['A%s'%str(i+3)].value
+        k = sheet['C%s'%str(i+3)].value
+        if u == user and key >= k:
+            wb.save('resources/users.xlsx')
+            return True
+    wb.save('resources/users.xlsx')
+    return False
+
+def is_user(user):
+    wb = openpyxl.load_workbook(filename = 'resources/users.xlsx')
+    sheet = wb['1']
+    users_number = sheet['A1'].value
+    for i in range(users_number):
+        u = sheet['A%s'%str(i+3)].value
+        if u == user:
+            wb.save('resources/users.xlsx')
+            return True
+    wb.save('resources/users.xlsx')
+    return False
+
+def is_password(user, password):
+    wb = openpyxl.load_workbook(filename = 'resources/users.xlsx')
+    sheet = wb['1']
+    users_number = sheet['A1'].value    
+    for i in range(users_number):
+        u = sheet['A%s'%str(i+3)].value
+        if u == user:
+            p = sheet['B%s'%str(i+3)].value
+            if p == password:
+                wb.save('resources/users.xlsx')
+                return True
+    wb.save('resources/users.xlsx')
+    return False
+
+def new_user(user, password):
+    wb = openpyxl.load_workbook(filename = 'resources/users.xlsx')
+    sheet = wb['1']
+    users_number = sheet['A1'].value
+    sheet['A%s' %str(users_number + 3)] = user
+    sheet['B%s' %str(users_number + 3)] = password
+    sheet['C%s' %str(users_number + 3)] = 3
+    sheet['A1'] = users_number + 1
+    wb.save('resources/users.xlsx')
 
 
-main_path = dirname(realpath(__name__))
+def captcha():
+    key = ''.join([choice('QWERTYUIOPLKJHGFDSAZXCVBNM1234567890') for i in range(5)])
+    img = Image.new('RGB', (180,60), 0xffffff )
+    draw = ImageDraw.Draw(img)
+    for i in range(60):
+        draw.line( [(randint(0,200),randint(0,60)), 
+                    (randint(0,200),randint(0,60))], 
+                   randint(0, 0xffffff), 1)
+    font = ImageFont.truetype('resources/fonts/7fonts.ru_Funky09-Bold.ttf', 60)
+    draw.text( (0,0), key, 0, font)
+    img.save('resources/img/captcha/%s.jpg' %str(key), 'JPEG')
+    return key
 
-conn = sqlite3.connect(main_path + '/data/cars.db')
-cursor = conn.cursor()
+def name_parser(name):
+    first_split = list(name.split('_'))
+    num = first_split[0]
+    title = list(first_split[1].split('.'))[0]
+    return (title, num)
+
  
+
+
+
 # Создание таблицы
-'''
-cursor.execute("""CREATE TABLE name
-                  (id integer primary key, firm text, model text, 
-                   engine_type text, engine_volume integer, 
-                   engine_power integer, engine_moment integer, 
-                   engine_fuel_consumption_dealer float, 
-                   engine_fuel_consumption_user float, 
-                   engine_fuel_consumption_avg float, price integer, 
-                   user_defined_expense integer, to_0_length integer,
-                   to_0_price, to_1_length integer, to_1_price, 
-                   to_2_length integer, to_2_price, 
-                   to_3_length integer, to_3_price, 
-                   to_4_length integer, to_4_price, 
-                   to_5_length integer, to_5_price, 
-                   transport_tax integer)
-               """)
-'''
-
-def add_changings(model, field, value):
-    pass
-
-def new_car():
-    pass
+#cursor.execute("""CREATE TABLE users_access
+                  #(id integer primary key, login text, password text,  
+                   #access_num integer)
+               #""")
 
 
-'''
-cursor.execute("""CREATE TABLE options
-                  (id integer primary key, model text, 
-                  
-                  )
-               """)
-'''
+              #cursor.execute("""INSERT INTO users_access
+                            #VALUES (1, 'timostar', 'Upiter98', 0)"""
+                         #)
+          
+          #
 
-# Написать readme.txt
+def get_last_nubmer(table):
+    conn = sqlite3.connect("resources/data.db")
+    cursor = conn.cursor()
+    sql = "SELECT MAX([id]) FROM %s"%table
+    cursor.execute(sql)
+    return cursor.fetchall()[0][0]
+
+def new_article(title, body, author):
+    number = get_last_nubmer('news')
+    if number == None:
+        number = 0
+    number += 1
+    conn = sqlite3.connect("resources/data.db")
+    cursor = conn.cursor()
+    filename = str(number)
+    cursor.execute("""INSERT INTO news
+                   VALUES (?, ?, ?, ?)
+                   """, [str(number), title, filename, author])
+    conn.commit()
+    f = open('pages/news/%s.txt'%filename, 'w+', encoding='utf-8')
+    f.write(body)
+    f.close()
+
+def get_articles_info(number):
+    conn = sqlite3.connect("resources/data.db")
+    cursor = conn.cursor()
+    cursor.execute("""SELECT * FROM news WHERE id=?
+                   """, [("%i"%number)])
+    return cursor.fetchall()[0]
+
+def delete_article(number): 
+    conn = sqlite3.connect("resources/data.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM news WHERE id=?", [("%i"%number)])
+    conn.commit()
+    filename = str(number) + '.txt'
+    path = 'pages/news/' + filename
+    f = open(path, 'r', encoding='utf-8')
+    text = f.read()
+    f.close()
+    new_path = 'garbage/' + filename
+    files = os.listdir('garbage')
+    if filename in files:
+        year = time.localtime(time.time()).tm_year
+        mon = time.localtime(time.time()).tm_mon
+        day = time.localtime(time.time()).tm_mday
+        hour = time.localtime(time.time()).tm_hour
+        Min = time.localtime(time.time()).tm_min
+        sec = time.localtime(time.time()).tm_sec
+        f = open('garbage/%s_(%i.%i.%i %i-%i-%i).txt'%(
+            str(number), 
+            day, mon, year, hour, Min, sec
+            ), 'w+', encoding='utf-8')
+    else:
+        f = open(new_path, 'w+', encoding='utf-8')
+    f.write(text)
+    f.close()
+    os.remove(path)
+    # Нужно прописать исключения и ошибки.
+    # Когда аргументы введены правильно и все файлы
+    # существуют, обработка проходит верно.
+
+
+if __name__ == "__main__":
+    print(get_last_nubmer('news'))
+    #print(is_access('timostar', 0))
