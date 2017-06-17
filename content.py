@@ -10,14 +10,46 @@ def head():
     return head
 
 
-def menu():
+def menu(title):
     menu = """
-        <div class="menu_box">
-            <a href="/index"><div class="Menu">Главная</div></a>
-            <a href="/about"><div class="Menu">Обо мне</div></a>
-            <a href="/science"><div class="Menu">Наука</div></a>
-            <a href="/contacts"><div class="Menu">Контакты</div></a>
-        </div>"""
+            <div class="menu_box">
+                <a href="/index"><div class="Menu">Главная</div></a>
+                <a href="/news"><div class="Menu">Новости</div></a>
+                <a href="/cars"><div class="Menu">Машины</div></a>
+                <a href="/profile"><div class="Menu">Профиль</div></a>
+            </div>"""    
+    if title == 'Главная':
+        menu = """
+                <div class="menu_box">
+                    <a href="/index"><div class="Menu-opened">Главная</div></a>
+                    <a href="/news"><div class="Menu">Новости</div></a>
+                    <a href="/cars"><div class="Menu">Машины</div></a>
+                    <a href="/profile"><div class="Menu">Профиль</div></a>
+                </div>"""
+    elif title == 'Новости':
+        menu = """
+                <div class="menu_box">
+                    <a href="/index"><div class="Menu">Главная</div></a>
+                    <a href="/news"><div class="Menu-opened">Новости</div></a>
+                    <a href="/cars"><div class="Menu">Машины</div></a>
+                    <a href="/profile"><div class="Menu">Профиль</div></a>
+                </div>"""
+    elif title == 'Профиль':
+        menu = """
+                <div class="menu_box">
+                    <a href="/index"><div class="Menu">Главная</div></a>
+                    <a href="/news"><div class="Menu">Новости</div></a>
+                    <a href="/cars"><div class="Menu">Машины</div></a>
+                    <a href="/profile"><div class="Menu-opened">Профиль</div></a>
+                </div>"""
+    elif title == 'Машины':
+        menu = """
+            <div class="menu_box">
+                <a href="/index"><div class="Menu">Главная</div></a>
+                <a href="/news"><div class="Menu">Новости</div></a>
+                <a href="/cars"><div class="Menu-opened">Машины</div></a>
+                <a href="/profile"><div class="Menu">Профиль</div></a>
+            </div>"""         
     return menu
 
 
@@ -30,7 +62,7 @@ def footer():
     return footer
 
 
-def html_all(menu, content, right_sidebar):
+def html_all(title, content, right_sidebar):
     html = ("""
         <html>"""
             + head() +
@@ -41,7 +73,7 @@ def html_all(menu, content, right_sidebar):
                         <div class="head_block">
                             <div class="logo">
                             </div>"""
-                            + menu +
+                            + menu(title) +
                         """</div>
                     </header> <!-- .header-->
                     <div class="middle">
