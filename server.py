@@ -107,7 +107,7 @@ def index():
             </div>"""
     content = '<br>'
     right_sidebar = login_form()
-    return html_all(menu, content, right_sidebar)
+    return html_all('Главная', content, right_sidebar)
 
 
 @app.route("/register")
@@ -146,12 +146,6 @@ def news():
                     <div class="add_new">Добавить новость</div>
                 </a><center>
                 </div>
-            """
-    menu = """
-            <div class="menu_box">
-                <a href="index"><div class="Menu">Главная</div></a>
-                <a href="news"><div class="Menu-opened">Новости</div></a>
-            </div>
             """
     news = ''
     files = os.listdir(path = 'pages/news')
@@ -208,7 +202,7 @@ def news():
         news += article
     content = edit + news
     right_sidebar = login_form() 
-    return html_all(menu, content, right_sidebar)
+    return html_all('Новости', content, right_sidebar)
 
 
 @app.route("/news/article", methods=['POST', 'GET'])
@@ -285,20 +279,20 @@ def delete():
     # переместить его в "корзину сайта"
 
 
+@app.route("/cars")
+def cars():
+    content = ' '
+    return html_all('Машины', content, '')
+
+
 @app.route("/profile")
-def profile():
-    menu = """
-            <div class="menu_box">
-                <a href="index"><div class="Menu">Главная</div></a>
-                <a href="news"><div class="Menu">Новости</div></a>
-                <a href="profile"><div class="Menu-opened">Профиль</div></a>
-            </div>"""    
+def profile():   
     if 'login' in session:
         content = ('<div class="content">Logged in as %s</div>' 
                    % escape(session['login']))
     else:
         content = '<div class="content">You are not logged in</div>'
-    return html_all(menu, content, '')
+    return html_all('Профиль', content, '')
 
 
 #---------------------------------RESOURCES------------------------------------
