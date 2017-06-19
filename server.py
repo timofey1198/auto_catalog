@@ -281,7 +281,26 @@ def delete():
 
 @app.route("/cars")
 def cars():
-    content = ' '
+    form = """
+           <form>
+             <b>Общие</b><br>
+             Фирма<br>
+             <input type="text" name="firm"><br>
+             Модель<br>
+             <input type="text" name="model"><br>
+             <hr><br>
+             <b>Двигатель</b><br>
+             Тип<br>
+             <input type="text" name="engine_type"><br>
+             Объем<br>
+             <input type="text" name="engine_volume"><br>
+             Мощность<br>
+             <input type="text" name="engine_power"><br>
+             Момент<br>
+             <input type="text" name="engine_moment"><br>
+           </form>
+           """
+    content = '<div class="news">' + form + '</div>'
     return html_all('Машины', content, '')
 
 
