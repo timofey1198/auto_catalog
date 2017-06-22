@@ -205,6 +205,11 @@ input[type=submit]:hover, input[type=reset]:hover {
     padding-top: 30px;
 }
 
+.error {
+	color: red;
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
 
 /* Right Sidebar
 -----------------------------------------------------------------------------*/
