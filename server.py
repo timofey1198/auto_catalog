@@ -281,6 +281,12 @@ def delete():
 
 @app.route("/cars")
 def cars():
+    content = ''
+    return html_all('Машины', content, '')
+
+
+@app.route("/new_car")
+def new_car():
     form = """
            <form>
              <b>Общие</b><br>
@@ -288,20 +294,40 @@ def cars():
              <input type="text" name="firm"><br>
              Модель<br>
              <input type="text" name="model"><br>
+             Цена<br>
+             <input type="text" name="price" required
+                    pattern="[1-9]{1}[0-9]{0,10}"><br>
              <hr><br>
              <b>Двигатель</b><br>
              Тип<br>
              <input type="text" name="engine_type"><br>
              Объем<br>
-             <input type="text" name="engine_volume"><br>
+             <input type="text" name="engine_volume" required 
+                    pattern="[1-9]{1}[0-9]{0,4}><br>
              Мощность<br>
-             <input type="text" name="engine_power"><br>
+             <input type="text" name="engine_power" required 
+                    pattern="[1-9]{1}[0-9]{0,3}"><br>
              Момент<br>
-             <input type="text" name="engine_moment"><br>
+             <input type="text" name="engine_moment" required 
+                    pattern="[1-9]{1}[0-9]{0,4}><br>
+             Расход топлива (официальный)<br>
+             <input type="text" name="engine_fuel_consumption_dealer" 
+                    required pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
+             <hr><br>
+             <b>Дополнительно</b><br>
+             Транспортный налог<br>
+             <input type="text" name="transport_tax" required
+                    pattern="[1-9]{1}[0-9]{0,3}"><br>
+             <input type="submit" value="Добавить">
            </form>
            """
     content = '<div class="news">' + form + '</div>'
     return html_all('Машины', content, '')
+
+
+@app.route("/new_car_handler")
+def new_car_handler():
+    pass
 
 
 @app.route("/profile")
