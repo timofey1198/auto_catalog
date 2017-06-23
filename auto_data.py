@@ -4,13 +4,10 @@ from os.path import dirname, realpath
 
 
 main_path = dirname(realpath(__name__))
-
-conn = sqlite3.connect(main_path + '/data/cars.db')
-cursor = conn.cursor()
  
 # Создание таблицы
 '''
-cursor.execute("""CREATE TABLE name
+cursor.execute("""CREATE TABLE cars
                   (id integer primary key, firm text, model text, 
                    engine_type text, engine_volume integer, 
                    engine_power integer, engine_moment integer, 
@@ -28,10 +25,30 @@ cursor.execute("""CREATE TABLE name
 '''
 
 def add_changings(model, field, value):
-    pass
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
 
-def new_car():
-    pass
+
+def new_car(firm, model, price, engine_type, engine_volume,
+             engine_power, engine_moment,
+             engine_fuel_consumption_dealer, transport_tax):
+    """
+    new_car
+    """
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
+    cursor.execute("""
+                   INSERT INTO cars (firm, model, price, engine_type,
+                                     engine_volume, engine_power, engine_moment,
+                                     engine_fuel_consumption_dealer, 
+                                     transport_tax
+                                     ) 
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   """, [firm, model, price, engine_type, engine_volume, 
+                        engine_power, engine_moment,
+                        engine_fuel_consumption_dealer, transport_tax]
+                   )
+    conn.commit()
 
 
 '''
@@ -43,3 +60,12 @@ cursor.execute("""CREATE TABLE options
 '''
 
 # Написать readme.txt
+
+if __name__ == '__main__':
+    #new_car('test', 't_0')
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
+    cursor.execute("""
+                   SELECT * FROM cars
+                   """)
+    print(cursor.fetchall())
