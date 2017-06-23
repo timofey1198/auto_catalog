@@ -7,6 +7,7 @@ from flask import url_for
 from flask import escape
 from content import html_all
 import data
+import auto_data
 import os
 
 app = Flask(__name__)
@@ -92,8 +93,8 @@ def news_handler():
         body = request.form['news_text']
         author = session['login']
         data.new_article(title, body, author)
-        return news()
-    return edit()
+        return redirect(url_for("news"))
+    return redirect(url_for("edit"))
 
 #------------------------------------PAGES--------------------------------------
 
@@ -280,54 +281,95 @@ def delete():
 
 
 @app.route("/cars")
-def cars():
+def cars(**kwargs):
+    new_car_status = ''
+    if 'new_car_status' in kwargs:
+        new_car_status = kwargs['new_car_status'] + '<br>'
     content = ''
+    if 'login' in session:
+        if session['login'] == 'admin':
+            content = new_car_status + '<a href="new_car">Добавить машину</a>'
     return html_all('Машины', content, '')
 
 
 @app.route("/new_car")
-def new_car():
+def new_car(**kwargs):
+    error = ''
+    if 'error' in kwargs:
+        if kwargs['error'] == 'captcha':
+            error = """
+                    <div class="error">
+                        Неправильно введен код с картинки<br>
+                    </div>
+                    """
+
     form = """
-           <form>
-             <b>Общие</b><br>
-             Фирма<br>
-             <input type="text" name="firm"><br>
-             Модель<br>
-             <input type="text" name="model"><br>
-             Цена<br>
-             <input type="text" name="price" required
-                    pattern="[1-9]{1}[0-9]{0,10}"><br>
-             <hr><br>
-             <b>Двигатель</b><br>
-             Тип<br>
-             <input type="text" name="engine_type"><br>
-             Объем<br>
-             <input type="text" name="engine_volume" required 
-                    pattern="[1-9]{1}[0-9]{0,4}><br>
-             Мощность<br>
-             <input type="text" name="engine_power" required 
-                    pattern="[1-9]{1}[0-9]{0,3}"><br>
-             Момент<br>
-             <input type="text" name="engine_moment" required 
-                    pattern="[1-9]{1}[0-9]{0,4}><br>
-             Расход топлива (официальный)<br>
-             <input type="text" name="engine_fuel_consumption_dealer" 
-                    required pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
-             <hr><br>
-             <b>Дополнительно</b><br>
-             Транспортный налог<br>
-             <input type="text" name="transport_tax" required
-                    pattern="[1-9]{1}[0-9]{0,3}"><br>
-             <input type="submit" value="Добавить">
+           <form action="new_car_handler" method="POST">
+               <b>Общие</b><br>
+               Фирма<br>
+               <input type="text" name="firm"
+                      required><br>
+               Модель<br>
+               <input type="text" name="model"
+                      required><br>
+               Цена<br>
+               <input type="text" name="price" 
+                      required pattern="[1-9]{1}[0-9]{0,10}"><br>
+               <hr><br>
+               <b>Двигатель</b><br>
+               Тип<br>
+               <input type="text" name="engine_type"
+                      required><br>
+               Объем<br>
+               <input type="text" name="engine_volume"  
+                      required pattern="[1-9]{1}[0-9]{0,4}"><br>
+               Мощность<br>
+               <input type="text" name="engine_power"  
+                      required pattern="[1-9]{1}[0-9]{0,3}"><br>
+               Момент<br>
+               <input type="text" name="engine_moment"  
+                      required pattern="[1-9]{1}[0-9]{0,4}"><br>
+               Расход топлива (официальный)<br>
+               <input type="text" name="engine_fuel_consumption_dealer" 
+                      required pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
+               <hr><br>
+               <b>Дополнительно</b><br>
+               Транспортный налог<br>
+               <input type="text" name="transport_tax" 
+                      required pattern="[1-9]{1}[0-9]{0,3}"><br>
+               <img src="/captcha"><br><br>
+               <input type="text" name="captcha" required 
+                      placeholder="Введите текст с картинки"><br>
+               <input type="submit" value="Добавить">
            </form>
            """
-    content = '<div class="news">' + form + '</div>'
+    content = '<div class="news">' + error + form + '</div>'
     return html_all('Машины', content, '')
 
 
-@app.route("/new_car_handler")
+@app.route("/new_car_handler", methods = ['POST'])
 def new_car_handler():
-    pass
+    if request.method == 'POST':
+        if session['key'] == request.form['captcha']:
+            
+            firm = request.form['firm']
+            model = request.form['model']
+            price = request.form['price']
+            engine_type = request.form['engine_type']
+            engine_volume = request.form['engine_volume']
+            engine_power = request.form['engine_power']
+            engine_moment = request.form['engine_moment']
+            engine_fuel_consumption_dealer =\
+                request.form['engine_fuel_consumption_dealer']
+            transport_tax = request.form['transport_tax']
+            
+            auto_data.new_car(firm, model, price, engine_type,
+                    engine_volume, engine_power, engine_moment,
+                    engine_fuel_consumption_dealer, transport_tax)
+            
+            return cars(new_car_status = 'ok')
+        return new_car(error = 'captcha')
+    return redirect(url_for("new_car"))
 
 
 @app.route("/profile")
