@@ -6,6 +6,7 @@ def head():
     <head>
         <meta charset="utf-8">
         <link href="/style" rel="stylesheet">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
     </head>"""
     return head
 
@@ -65,29 +66,40 @@ def footer():
 def html_all(title, content, right_sidebar):
     html = ("""
         <html>"""
-            + head() +
-            """<body>
+            + head() + """
+            <body>
                 <a href="#top"><div class="up"></div></a>
                 <div class="wrapper">
                     <header class="header" name="top">
                         <div class="head_block">
                             <div class="logo">
                             </div>"""
-                            + menu(title) +
-                        """</div>
+                            + menu(title) + """
+                        </div>
                     </header> <!-- .header-->
                     <div class="middle">
                         <div class="container">
                             <div class="content">"""
-                                + content +
-                         """</div>
+                                + content + """
+                        </div>
                         </div><!-- .container-->
                         <div class="right-sidebar">"""
                         + right_sidebar +
                         """</div>
                     </div><!-- .middle-->"""
-                    + footer() +
-                """</div><!-- .wrapper -->
+                    + footer() + """
+                </div><!-- .wrapper -->
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                        function captcha_reload(){
+                            $("#captcha").html(
+                                <img src="/captcha">
+                            );
+                        }
+                        
+                        $(".captcha_reload").click(captcha_reload);
+                    });
+                </script>
             </body>
         </html>""")
     return html
