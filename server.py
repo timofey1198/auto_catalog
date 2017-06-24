@@ -337,7 +337,8 @@ def new_car(**kwargs):
                Транспортный налог<br>
                <input type="text" name="transport_tax" 
                       required pattern="[1-9]{1}[0-9]{0,3}"><br>
-               <img src="/captcha"><br><br>
+               <img src="/captcha" id="captcha">
+               <div class="captcha_reload">Reload</div><br><br>
                <input type="text" name="captcha" required 
                       placeholder="Введите текст с картинки"><br>
                <input type="submit" value="Добавить">
