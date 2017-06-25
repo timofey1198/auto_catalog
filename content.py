@@ -5,8 +5,10 @@ def head():
     head = """
     <head>
         <meta charset="utf-8">
-        <link href="/style" rel="stylesheet">
-        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
+        <link href="/style" type="text/css" rel="stylesheet">
+        <script type="text/javascript" 
+        src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js">
+        </script>
     </head>"""
     return head
 
@@ -91,13 +93,12 @@ def html_all(title, content, right_sidebar):
                 </div><!-- .wrapper -->
                 <script type="text/javascript">
                     $(document).ready(function(){
-                        function captcha_reload(){
-                            $("#captcha").html(
-                                <img src="/captcha">
-                            );
-                        }
+                        function captcha_new(){
+                            $("#captcha_img").attr("src", "/captcha?q=" + 
+                                                   Math.random());
+                        } 
                         
-                        $(".captcha_reload").click(captcha_reload);
+                        $("#captcha_new").click(captcha_new);
                     });
                 </script>
             </body>

@@ -304,45 +304,46 @@ def new_car(**kwargs):
                     """
 
     form = """
-           <form action="new_car_handler" method="POST">
-               <b>Общие</b><br>
-               Фирма<br>
-               <input type="text" name="firm"
-                      required><br>
-               Модель<br>
-               <input type="text" name="model"
-                      required><br>
-               Цена<br>
-               <input type="text" name="price" 
-                      required pattern="[1-9]{1}[0-9]{0,10}"><br>
-               <hr><br>
-               <b>Двигатель</b><br>
-               Тип<br>
-               <input type="text" name="engine_type"
-                      required><br>
-               Объем<br>
-               <input type="text" name="engine_volume"  
-                      required pattern="[1-9]{1}[0-9]{0,4}"><br>
-               Мощность<br>
-               <input type="text" name="engine_power"  
-                      required pattern="[1-9]{1}[0-9]{0,3}"><br>
-               Момент<br>
-               <input type="text" name="engine_moment"  
-                      required pattern="[1-9]{1}[0-9]{0,4}"><br>
-               Расход топлива (официальный)<br>
-               <input type="text" name="engine_fuel_consumption_dealer" 
-                      required pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
-               <hr><br>
-               <b>Дополнительно</b><br>
-               Транспортный налог<br>
-               <input type="text" name="transport_tax" 
-                      required pattern="[1-9]{1}[0-9]{0,3}"><br>
-               <img src="/captcha" id="captcha">
-               <div class="captcha_reload">Reload</div><br><br>
-               <input type="text" name="captcha" required 
-                      placeholder="Введите текст с картинки"><br>
-               <input type="submit" value="Добавить">
-           </form>
+        <form action="new_car_handler" method="POST">
+            <b>Общие</b><br>
+            Фирма<br>
+            <input type="text" name="firm"
+                   required><br>
+            Модель<br>
+            <input type="text" name="model"
+                   required><br>
+            Цена<br>
+            <input type="text" name="price" 
+                   required pattern="[1-9]{1}[0-9]{0,10}"><br>
+            <hr><br>
+            <b>Двигатель</b><br>
+            Тип<br>
+            <input type="text" name="engine_type"
+                   required><br>
+            Объем<br>
+            <input type="text" name="engine_volume"  
+                   required pattern="[1-9]{1}[0-9]{0,4}"><br>
+            Мощность<br>
+            <input type="text" name="engine_power"  
+                   required pattern="[1-9]{1}[0-9]{0,3}"><br>
+            Момент<br>
+            <input type="text" name="engine_moment"  
+                   required pattern="[1-9]{1}[0-9]{0,4}"><br>
+            Расход топлива (официальный)<br>
+            <input type="text" name="engine_fuel_consumption_dealer" 
+                   required pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
+            <hr><br>
+            <b>Дополнительно</b><br>
+            Транспортный налог<br>
+            <input type="text" name="transport_tax" 
+                   required pattern="[1-9]{1}[0-9]{0,3}"><br>
+            <img src="/captcha" id="captcha_img">
+            <input type="button" id="captcha_new" value="Reload">
+            <br><br>
+            <input type="text" name="captcha" required 
+                   placeholder="Введите текст с картинки"><br>
+            <input type="submit" value="Добавить">
+        </form>
            """
     content = '<div class="news">' + error + form + '</div>'
     return html_all('Машины', content, '')
@@ -399,6 +400,7 @@ def top():
     return img.read()
 
 @app.route("/captcha")
+@app.route("/captcha/new")
 def captcha():
     key = data.captcha()
     session['key'] = key
