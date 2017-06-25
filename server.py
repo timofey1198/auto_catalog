@@ -302,6 +302,8 @@ def new_car(**kwargs):
                         Неправильно введен код с картинки<br>
                     </div>
                     """
+        else:
+            error = '<div class="error">%s<br></div>'%kwargs['error']
 
     form = """
         <form action="new_car_handler" method="POST">
@@ -314,29 +316,29 @@ def new_car(**kwargs):
                    required><br>
             Цена<br>
             <input type="text" name="price" 
-                   required pattern="[1-9]{1}[0-9]{0,10}"><br>
+                   pattern="[1-9]{1}[0-9]{0,10}"><br>
             <hr><br>
             <b>Двигатель</b><br>
             Тип<br>
             <input type="text" name="engine_type"
-                   required><br>
+                   ><br>
             Объем<br>
             <input type="text" name="engine_volume"  
-                   required pattern="[1-9]{1}[0-9]{0,4}"><br>
+                   pattern="[1-9]{1}[0-9]{0,4}"><br>
             Мощность<br>
             <input type="text" name="engine_power"  
-                   required pattern="[1-9]{1}[0-9]{0,3}"><br>
+                   pattern="[1-9]{1}[0-9]{0,3}"><br>
             Момент<br>
             <input type="text" name="engine_moment"  
-                   required pattern="[1-9]{1}[0-9]{0,4}"><br>
+                   pattern="[1-9]{1}[0-9]{0,4}"><br>
             Расход топлива (официальный)<br>
             <input type="text" name="engine_fuel_consumption_dealer" 
-                   required pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
+                   pattern="[1-9]{1}[0-9]{0,1}[,]{0,1}[0-9]{0,3}"><br>
             <hr><br>
             <b>Дополнительно</b><br>
             Транспортный налог<br>
             <input type="text" name="transport_tax" 
-                   required pattern="[1-9]{1}[0-9]{0,3}"><br>
+                   pattern="[1-9]{1}[0-9]{0,3}"><br>
             <img src="/captcha" id="captcha_img">
             <input type="button" id="captcha_new" value="Reload">
             <br><br>
@@ -365,9 +367,12 @@ def new_car_handler():
                 request.form['engine_fuel_consumption_dealer']
             transport_tax = request.form['transport_tax']
             
-            auto_data.new_car(firm, model, price, engine_type,
-                    engine_volume, engine_power, engine_moment,
-                    engine_fuel_consumption_dealer, transport_tax)
+            try:
+                auto_data.new_car(firm, model, price, engine_type,
+                        engine_volume, engine_power, engine_moment,
+                        engine_fuel_consumption_dealer, transport_tax)
+            except ValueError as e:
+                return new_car(error = e)
             
             return cars(new_car_status = 'ok')
         return new_car(error = 'captcha')
@@ -400,7 +405,6 @@ def top():
     return img.read()
 
 @app.route("/captcha")
-@app.route("/captcha/new")
 def captcha():
     key = data.captcha()
     session['key'] = key
