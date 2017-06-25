@@ -27,7 +27,16 @@ cursor.execute("""CREATE TABLE cars
 def add_changings(model, field, value):
     conn = sqlite3.connect(main_path + '/data/cars.db')
     cursor = conn.cursor()
+    #Доделать
 
+def is_exist_car(firm, model):
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT count(*) FROM cars
+        WHERE firm=? AND model=?
+        """, [firm, model])
+    return bool(cursor.fetchall()[0][0])
 
 def new_car(firm, model, price, engine_type, engine_volume,
              engine_power, engine_moment,
@@ -35,6 +44,8 @@ def new_car(firm, model, price, engine_type, engine_volume,
     """
     new_car
     """
+    if is_exist_car(firm, model):
+        raise ValueError('Машина такой фирмы и модели уже существует')
     conn = sqlite3.connect(main_path + '/data/cars.db')
     cursor = conn.cursor()
     cursor.execute("""
@@ -69,3 +80,4 @@ if __name__ == '__main__':
                    SELECT * FROM cars
                    """)
     print(cursor.fetchall())
+    print(is_exist_car('test', 't_1'))
