@@ -24,10 +24,47 @@ cursor.execute("""CREATE TABLE cars
                """)
 '''
 
+
+def get_cars():
+    """
+    get_cars()
+    """
+    pass
+
+
+def get_cars_by_interval(start_num, end_num):
+    """
+    get_cars_by_interval(start_num, end_num)
+        start_num: integer number, the start of the interval
+        end_num: integer number, the end of the interval
+    """
+    
+    if type(start_num) != int or type(end_num) != int:
+        raise TypeError('Тип аргументов не соответствует спецификации')
+    if start_num > end_num:
+        raise ValueError(
+            'Значение начала промежутка больше, чем значение конца')
+    if start_num < 1:
+        start_num = 1
+    
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT count(*) FROM cars')
+    number_of_cars = cursor.fetchall()[0][0]
+    
+    if start_num > number_of_cars:
+        return {}
+    if end_num > number_of_cars:
+        end_num = number_of_cars
+    
+    #Доделать
+
+
 def add_changings(model, field, value):
     conn = sqlite3.connect(main_path + '/data/cars.db')
     cursor = conn.cursor()
     #Доделать
+
 
 def is_exist_car(firm, model):
     conn = sqlite3.connect(main_path + '/data/cars.db')
@@ -38,14 +75,17 @@ def is_exist_car(firm, model):
         """, [firm, model])
     return bool(cursor.fetchall()[0][0])
 
+
 def new_car(firm, model, price, engine_type, engine_volume,
              engine_power, engine_moment,
              engine_fuel_consumption_dealer, transport_tax):
     """
     new_car
     """
+    
     if is_exist_car(firm, model):
         raise ValueError('Машина такой фирмы и модели уже существует')
+    
     conn = sqlite3.connect(main_path + '/data/cars.db')
     cursor = conn.cursor()
     cursor.execute("""
