@@ -57,7 +57,12 @@ def get_cars_by_interval(start_num, end_num):
     if end_num > number_of_cars:
         end_num = number_of_cars
     
-    #Доделать
+    cursor.execute("""
+                   SELECT * FROM cars
+                   WHERE id >= ? AND id <= ?""",
+                    [start_num, end_num]
+                   )
+    return cursor.fetchall()
 
 
 def add_changings(model, field, value):
@@ -114,10 +119,11 @@ cursor.execute("""CREATE TABLE options
 
 if __name__ == '__main__':
     #new_car('test', 't_0')
-    conn = sqlite3.connect(main_path + '/data/cars.db')
-    cursor = conn.cursor()
-    cursor.execute("""
-                   SELECT * FROM cars
-                   """)
-    print(cursor.fetchall())
-    print(is_exist_car('test', 't_1'))
+    #conn = sqlite3.connect(main_path + '/data/cars.db')
+    #cursor = conn.cursor()
+    #cursor.execute("""
+                   #SELECT * FROM cars
+                   #""")
+    #print(cursor.fetchall())
+    #print(is_exist_car('test', 't_1'))
+    print(get_cars_by_interval(-1, 3))
