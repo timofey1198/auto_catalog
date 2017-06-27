@@ -286,9 +286,13 @@ def cars(**kwargs):
     if 'new_car_status' in kwargs:
         new_car_status = kwargs['new_car_status'] + '<br>'
     content = ''
+    for car_dict in auto_data.get_cars():
+        car_html = auto_data.car_info_to_html(car_dict)
+        content += car_html
     if 'login' in session:
         if session['login'] == 'admin':
-            content = new_car_status + '<a href="new_car">Добавить машину</a>'
+            content = (new_car_status + '<a href="new_car">Добавить машину</a>'
+                      + content)
     return html_all('Машины', content, '')
 
 
