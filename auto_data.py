@@ -25,6 +25,31 @@ cursor.execute("""CREATE TABLE cars
 '''
 
 
+def car_info_to_html(car_dict):
+    if car_dict['price'] == None:
+        car_dict['price'] = 'Цена не указана'
+    if car_dict['engine_type'] == None:
+        car_dict['engine_type'] = 'Тип не указан'
+    if car_dict['engine_volume'] == None:
+        car_dict['engine_volume'] = 'Объем не указан'
+    if car_dict['engine_power'] == None:
+        car_dict['engine_power'] = 'Мощность не указана'
+    avg_price = '-'
+    html = """
+        <div class="news">
+            <h2>{firm}&nbsp{model} {price}/{price_per_year}</h2><br>
+            Тип двигателя: {engine_type}<br>
+            Объем двигателя: {engine_volume}<br>
+            Мощность двигателя: {engine_power}<br>
+        </div>
+        """.format(firm = car_dict['firm'], model = car_dict['model'],
+                   price = car_dict['price'], price_per_year = avg_price,
+                   engine_type = car_dict['engine_type'],
+                   engine_volume = car_dict['engine_volume'],
+                   engine_power = car_dict['engine_power'])
+    return html
+
+
 def lists_cars_to_dicts(lists_cars):
     headers = ['id', 'firm', 'model', 'engine_type', 'engine_volume', 
                'engine_power', 'engine_moment', 
