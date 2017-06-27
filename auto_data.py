@@ -25,11 +25,39 @@ cursor.execute("""CREATE TABLE cars
 '''
 
 
+def lists_cars_to_dicts(lists_cars):
+    headers = ['id', 'firm', 'model', 'engine_type', 'engine_volume', 
+               'engine_power', 'engine_moment', 
+               'engine_fuel_consumption_dealer', 
+               'engine_fuel_consumption_user', 
+               'engine_fuel_consumption_avg', 'price', 
+               'user_defined_expense',
+               'to_0_length', 'to_0_price',
+               'to_1_length', 'to_1_price', 
+               'to_2_length', 'to_2_price', 
+               'to_3_length', 'to_3_price', 
+               'to_4_length', 'to_4_price', 
+               'to_5_length', 'to_5_price', 
+               'transport_tax']
+    dicts_cars = []
+    for list_car in lists_cars:
+        dict_car = {}
+        i = 0
+        for key in headers:
+            dict_car[key] = list_car[i]
+            i = i + 1
+        dicts_cars.append(dict_car)
+    return dicts_cars
+
+
 def get_cars():
     """
     get_cars()
     """
-    pass
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM cars')
+    return lists_cars_to_dicts(cursor.fetchall())
 
 
 def get_cars_by_interval(start_num, end_num):
@@ -62,7 +90,7 @@ def get_cars_by_interval(start_num, end_num):
                    WHERE id >= ? AND id <= ?""",
                     [start_num, end_num]
                    )
-    return cursor.fetchall()
+    return lists_cars_to_dicts(cursor.fetchall())
 
 
 def add_changings(model, field, value):
@@ -126,4 +154,4 @@ if __name__ == '__main__':
                    #""")
     #print(cursor.fetchall())
     #print(is_exist_car('test', 't_1'))
-    print(get_cars_by_interval(-1, 3))
+    print(get_cars_by_interval(-1, 1))
