@@ -424,6 +424,9 @@ def top():
 @app.route("/captcha")
 def captcha():
     key = data.captcha()
+    if 'key' in session:
+        name = session['key']
+        os.remove('resources/img/captcha/%s.jpg' % name)
     session['key'] = key
     img = open('resources/img/captcha/%s.jpg' %key, 'rb')
     return img.read()
