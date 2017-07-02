@@ -65,7 +65,7 @@ def footer():
     return footer
 
 
-def html_all(title, content, right_sidebar):
+def html_all(title, content, right_sidebar, scripts = ''):
     html = ("""
         <html>"""
             + head() + """
@@ -90,16 +90,10 @@ def html_all(title, content, right_sidebar):
                         """</div>
                     </div><!-- .middle-->"""
                     + footer() + """
-                </div><!-- .wrapper -->
-                <script type="text/javascript">
-                    $(document).ready(function(){
-                        function captcha_new(){
-                            $("#captcha_img").attr("src", "/captcha?q=" + 
-                                                   Math.random());
-                        } 
-                        
-                        $("#captcha_new").click(captcha_new);
-                    });
+                </div><!-- .wrapper -->"""
+                    + scripts + """
+                <script type="text/javascript" 
+                    src="scripts?script=captcha_reloader.js">
                 </script>
             </body>
         </html>""")
