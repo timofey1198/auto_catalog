@@ -291,7 +291,8 @@ def cars(**kwargs):
         content += car_html
     if 'login' in session:
         if session['login'] == 'admin':
-            content = (new_car_status + '<a href="new_car">Добавить машину</a>'
+            content = (new_car_status + '<a href="new_car">' +
+                       '<div class="button">Добавить машину</div></a>'
                       + content)
     return html_all('Машины', content, '')
 
@@ -394,6 +395,18 @@ def profile():
 
 
 #---------------------------------RESOURCES------------------------------------
+
+@app.route("/scripts", methods = ['GET'])
+def sctipts():
+    if 'script' in request.values:
+        asking_script = request.values['script']
+        script_files = os.listdir(path = 'resources/scripts')
+        if asking_script in script_files:
+            f = open('resources/scripts/%s' % asking_script, 'r')
+            return f.read()
+        return 'no'
+    return 'no'
+
 
 @app.route("/style")
 @app.route("/style.css")
