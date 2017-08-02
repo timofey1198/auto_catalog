@@ -401,16 +401,20 @@ def sctipts():
         if asking_script in script_files:
             f = open('resources/scripts/%s' % asking_script, 'r')
             return f.read()
-        return 'no'
-    return 'no'
+        return ''
+    return ''
 
 
-@app.route("/style")
-@app.route("/style.css")
+@app.route("/style", methods = ['GET'])
 def style():
-    st = open('resources/style.css', 'r', encoding='utf-8')
-    style = st.read()
-    return style
+    if 'file' in request.values:
+        asking_script = request.values['file']
+        script_files = os.listdir(path = 'resources/style')
+        if asking_script in script_files:
+            f = open('resources/style/%s' % asking_script, 'r')
+            return f.read()
+        return ''
+    return ''
 
 
 @app.route("/img/top")
