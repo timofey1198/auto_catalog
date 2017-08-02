@@ -36,13 +36,18 @@ def car_info_to_html(car_dict):
         car_dict['engine_power'] = 'Мощность не указана'
     avg_price = '-'
     html = """
-        <div class="news">
-            <h2>{firm}&nbsp{model} {price}/{price_per_year}</h2><br>
-            Тип двигателя: {engine_type}<br>
-            Объем двигателя: {engine_volume}<br>
-            Мощность двигателя: {engine_power}<br>
+    <a href="/cars?car={car_id}">
+        <div class="news link_block">
+            
+                <h2>{firm}&nbsp{model} {price}/{price_per_year}</h2><br>
+                Тип двигателя: {engine_type}<br>
+                Объем двигателя: {engine_volume}<br>
+                Мощность двигателя: {engine_power}<br>
+            
         </div>
-        """.format(firm = car_dict['firm'], model = car_dict['model'],
+        </a>
+        """.format(car_id = car_dict['id'],
+                   firm = car_dict['firm'], model = car_dict['model'],
                    price = car_dict['price'], price_per_year = avg_price,
                    engine_type = car_dict['engine_type'],
                    engine_volume = car_dict['engine_volume'],
@@ -134,12 +139,27 @@ def is_exist_car(firm, model):
     return bool(cursor.fetchall()[0][0])
 
 
+def get_main_info(car_id):
+    conn = sqlite3.connect(main_path + '/data/cars.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT firm,model FROM cars WHERE id=?',
+                   [car_id])
+    answer = cursor.fetchall()
+    if len(answer) > 0:
+        return answer[0]
+    else:
+        return (None, None)
+
+
 def new_car(firm, model, price, engine_type, engine_volume,
              engine_power, engine_moment,
-             engine_fuel_consumption_dealer, transport_tax):
+             engine_fuel_consumption_dealer, transport_tax,
+             user_defined_expense):
     """
     new_car
     """
+    
+    # Тут добавить проверку данных
     
     if is_exist_car(firm, model):
         raise ValueError('Машина такой фирмы и модели уже существует')
@@ -150,12 +170,13 @@ def new_car(firm, model, price, engine_type, engine_volume,
                    INSERT INTO cars (firm, model, price, engine_type,
                                      engine_volume, engine_power, engine_moment,
                                      engine_fuel_consumption_dealer, 
-                                     transport_tax
+                                     transport_tax, user_defined_expense
                                      ) 
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                    """, [firm, model, price, engine_type, engine_volume, 
                         engine_power, engine_moment,
-                        engine_fuel_consumption_dealer, transport_tax]
+                        engine_fuel_consumption_dealer, transport_tax,
+                        user_defined_expense]
                    )
     conn.commit()
 
@@ -179,4 +200,4 @@ if __name__ == '__main__':
                    #""")
     #print(cursor.fetchall())
     #print(is_exist_car('test', 't_1'))
-    print(get_cars_by_interval(-1, 1))
+    print(get_main_info(-1))

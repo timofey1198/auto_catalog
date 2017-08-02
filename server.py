@@ -101,11 +101,6 @@ def news_handler():
 @app.route("/")
 @app.route("/index")
 def index():
-    menu = """
-            <div class="menu_box">
-                <a href="index"><div class="Menu-opened">Главная</div></a>
-                <a href="news"><div class="Menu">Новости</div></a>
-            </div>"""
     content = '<br>'
     right_sidebar = login_form()
     return html_all('Главная', content, right_sidebar)
@@ -113,15 +108,6 @@ def index():
 
 @app.route("/register")
 def register():
-    
-    menu = """
-            <div class="menu_box">
-                <a href="index"><div class="Menu">Главная</div></a>
-                <a href="about"><div class="Menu">Обо мне</div></a>
-                <a href="science"><div class="Menu">Наука</div></a>
-                <a href="contacts"><div class="Menu">Контакты</div></a>
-            </div>
-            """
     content = """
             <div class="enter_form">
                 <form action="/reg" method="POST">
@@ -133,7 +119,7 @@ def register():
                 </form>
             </div>
             """
-    return html_all(menu, content, '')
+    return html_all('Регистрация', content, '')
 
 @app.route("/news")
 def news():
@@ -242,11 +228,6 @@ def contacts():
     return page_not_found_error()
 
 
-@app.route("/science")
-def science(): 
-    return page_not_found_error()
-
-
 @app.route("/edit")
 def edit():
     menu = """
@@ -280,15 +261,26 @@ def delete():
     # переместить его в "корзину сайта"
 
 
-@app.route("/cars")
+@app.route("/cars", methods = ['GET'])
 def cars(**kwargs):
+    # Вывод страницы с отдельной машиной
+    if 'car' in request.values:
+        car_id = request.values['car']
+        firm, model = auto_data.get_main_info(car_id)
+        if firm != None:
+            content = firm
+            return html_all('Машины', content, '')
+    
     new_car_status = ''
     if 'new_car_status' in kwargs:
         new_car_status = kwargs['new_car_status'] + '<br>'
     content = ''
+    
+    # Вывод списка машин из базы
     for car_dict in auto_data.get_cars():
         car_html = auto_data.car_info_to_html(car_dict)
         content += car_html
+    
     if 'login' in session:
         if session['login'] == 'admin':
             content = (new_car_status + '<a href="new_car">' +
@@ -310,7 +302,7 @@ def new_car(**kwargs):
         else:
             error = '<div class="error">%s<br></div>'%kwargs['error']
 
-    form = """
+    form = ("""
         <form action="new_car_handler" method="POST">
             <b>Общие</b><br>
             Фирма<br>
@@ -344,14 +336,16 @@ def new_car(**kwargs):
             Транспортный налог<br>
             <input type="text" name="transport_tax" 
                    pattern="[1-9]{1}[0-9]{0,3}"><br>
-            <img src="/captcha" id="captcha_img">
-            <input type="button" id="captcha_new" value="Reload">
-            <br><br>
-            <input type="text" name="captcha" required 
+            Дополнительные расходы<br>
+            <input type="text" name="user_defined_expense"><br>""" + 
+            #<img src="/captcha" id="captcha_img">
+            #<input type="button" id="captcha_new" value="Reload">
+            """<br><br>
+            <input type="text" name="captcha" 
                    placeholder="Введите текст с картинки"><br>
             <input type="submit" value="Добавить">
         </form>
-           """
+           """)
     content = '<div class="news">' + error + form + '</div>'
     return html_all('Машины', content, '')
 
@@ -359,7 +353,7 @@ def new_car(**kwargs):
 @app.route("/new_car_handler", methods = ['POST'])
 def new_car_handler():
     if request.method == 'POST':
-        if session['key'] == request.form['captcha']:
+        if True: #session['key'] == request.form['captcha']:
             
             firm = request.form['firm']
             model = request.form['model']
@@ -371,11 +365,14 @@ def new_car_handler():
             engine_fuel_consumption_dealer =\
                 request.form['engine_fuel_consumption_dealer']
             transport_tax = request.form['transport_tax']
+            user_defined_expense = request.form['user_defined_expense']
             
             try:
+                # Тут проходит верификация данных (auto_data.new_car)
                 auto_data.new_car(firm, model, price, engine_type,
                         engine_volume, engine_power, engine_moment,
-                        engine_fuel_consumption_dealer, transport_tax)
+                        engine_fuel_consumption_dealer, transport_tax,
+                        user_defined_expense)
             except ValueError as e:
                 return new_car(error = e)
             
