@@ -5,7 +5,7 @@ from flask import session
 from flask import redirect
 from flask import url_for
 from flask import escape
-from content import html_all
+from content import html_all, index_html
 import data
 import auto_data
 import os
@@ -103,7 +103,7 @@ def news_handler():
 def index():
     content = '<br>'
     right_sidebar = login_form()
-    return html_all('Главная', content, right_sidebar)
+    return index_html()
 
 
 @app.route("/register")
@@ -412,6 +412,18 @@ def style():
         script_files = os.listdir(path = 'resources/style')
         if asking_script in script_files:
             f = open('resources/style/%s' % asking_script, 'r')
+            return f.read()
+        return ''
+    return ''
+
+
+@app.route("/img", methods = ['GET'])
+def img():
+    if 'file' in request.values:
+        asking_file = request.values['file']
+        script_files = os.listdir(path = 'resources/img')
+        if asking_file in script_files:
+            f = open('resources/img/%s' % asking_file, 'rb')
             return f.read()
         return ''
     return ''
